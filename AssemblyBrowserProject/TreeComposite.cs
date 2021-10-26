@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace AssemblyBrowserProject
 {
 
-    enum ACCESS_MODIFIER
+    public enum ACCESS_MODIFIER
     {
         PUBLIC,
         PRIVATE,
@@ -17,9 +17,7 @@ namespace AssemblyBrowserProject
         PRIVATE_PROTECTED
     }
 
-
-
-    enum COMPONENT_TYPE
+    public enum COMPONENT_TYPE
     {
         FIELD,
         PROPERTY,
@@ -29,9 +27,9 @@ namespace AssemblyBrowserProject
         STRUCT
     }
 
-    class TreeComponent
+    public class TreeComponent
     {
-        protected static String GetAccessModifierString(ACCESS_MODIFIER accMod)
+        internal static String GetAccessModifierString(ACCESS_MODIFIER accMod)
         {
             switch (accMod)
             {
@@ -51,9 +49,80 @@ namespace AssemblyBrowserProject
             ComponentType = componentType;
         }
 
-        public virtual void Add(TreeComponent cmp) { throw new NotImplementedException(); }
+        public virtual TreeComponent Add(TreeComponent cmp) { throw new NotImplementedException(); }
         public virtual void Remove(TreeComponent cmp) { throw new NotImplementedException(); }
         public virtual TreeComponent GetChildAt(int index) { throw new NotImplementedException(); }
+        public virtual int Find(String name) { throw new NotImplementedException(); }
+        public virtual TreeComponent GetLastChild() { throw new NotImplementedException(); }
+
+        public static TreeComponent CreateTreeComponent(Type type, bool ignoreNested)
+        {
+            if (ignoreNested && type.IsNested) return null;
+            if (type.IsEnum || type.IsInterface ||
+                    type.IsAbstract || type.IsGenericParameter ||
+                    type.IsGenericType || type.IsGenericTypeDefinition) return null;
+            
+            if (type.IsNested)
+            {
+                if (type.IsClass)
+                {
+                    if (type.IsNestedPrivate)
+                    {
+                        return new ClassTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PRIVATE);
+                    }
+                    else if (type.IsPublic)
+                    {
+                        return new ClassTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PUBLIC);
+                    }
+                    else
+                    {
+                        return new ClassTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PROTECTED);
+                    }
+                }
+                else if (type.IsValueType)
+                {
+                    if (type.IsNestedPrivate)
+                    {
+                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PRIVATE);
+                    }
+                    else if (type.IsPublic)
+                    {
+                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PUBLIC);
+                    }
+                    else
+                    {
+                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PROTECTED);
+                    }
+                }
+
+            } else
+            {
+                if (type.IsClass)
+                {
+                    if (type.IsPublic)
+                    {
+                        return new ClassTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PUBLIC);
+                    }
+                    else
+                    {
+                        return new ClassTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.INTERNAL);
+                    }
+                }
+                else if (type.IsValueType)
+                {
+                    if (type.IsPublic)
+                    {
+                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PUBLIC);
+                    }
+                    else
+                    {
+                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.INTERNAL);
+                    }
+                }
+            }
+
+            return null;
+        }
 
         public String Name { get; set; }
         public COMPONENT_TYPE ComponentType { get; set; }
@@ -62,19 +131,21 @@ namespace AssemblyBrowserProject
 
     class TreeLeaf : TreeComponent
     {
-        public TreeLeaf(String name, COMPONENT_TYPE componentType) :
-            base(name, componentType) { }
+        public TreeLeaf(String name, COMPONENT_TYPE componentType, Type type) :
+            base(name, componentType) { UsedType = type; }
+
+        public Type UsedType { get; set; }
     }
 
     class MethodTreeLeaf : TreeLeaf
     {
-        public MethodTreeLeaf(String name, COMPONENT_TYPE componentType, ACCESS_MODIFIER accMod) :
-            base(name, componentType)
+        public MethodTreeLeaf(String name, COMPONENT_TYPE componentType, ACCESS_MODIFIER accMod, Type returnType) :
+            base(name, componentType, returnType)
         { AccessModifier = accMod; }
 
         public override string ToString()
         {
-            return GetAccessModifierString(AccessModifier) + " " + Name + "(...)";
+            return GetAccessModifierString(AccessModifier) + " " + UsedType.Name + Name + "(...)";
         }
 
         public ACCESS_MODIFIER AccessModifier { get; set; }
@@ -82,11 +153,18 @@ namespace AssemblyBrowserProject
 
     class PropertyTreeLeaf : TreeLeaf
     {
-        public PropertyTreeLeaf(String name, COMPONENT_TYPE componentType, ACCESS_MODIFIER setAccMod, ACCESS_MODIFIER getAccMod) :
-            base(name, componentType)
+        public PropertyTreeLeaf(String name, COMPONENT_TYPE componentType, ACCESS_MODIFIER setAccMod, ACCESS_MODIFIER getAccMod, Type propertyType) :
+            base(name, componentType, propertyType)
         {
             SetAccessModifier = setAccMod;
             GetAccessModifier = getAccMod;
+        }
+
+        public override string ToString()
+        {
+            return UsedType.Name + Name + 
+                "{" + GetAccessModifierString(GetAccessModifier)+ " get; " 
+                + GetAccessModifierString(SetAccessModifier) + " set;}";
         }
 
         public ACCESS_MODIFIER SetAccessModifier { get; set; }
@@ -95,17 +173,25 @@ namespace AssemblyBrowserProject
 
     class FieldTreeLeaf : TreeLeaf
     {
-        public FieldTreeLeaf(String name, COMPONENT_TYPE componentType, ACCESS_MODIFIER accMod) :
-            base(name, componentType)
+        public FieldTreeLeaf(String name, COMPONENT_TYPE componentType, ACCESS_MODIFIER accMod, Type fieldType) :
+            base(name, componentType, fieldType)
         { AccessModifier = accMod; }
         public ACCESS_MODIFIER AccessModifier { get; set; }
     }
 
-    class TreeComposite : TreeComponent
+    public class TreeComposite : TreeComponent
     {
-        public override void Add(TreeComponent cmp) { components.Add(cmp); }
+        public override TreeComponent Add(TreeComponent cmp) { components.Add(cmp); return components.Last(); }
         public override void Remove(TreeComponent cmp) { components.Remove(cmp); }
         public override TreeComponent GetChildAt(int index) { return components.ElementAt(index); }
+        public override int Find(string name)
+        {
+            return components.FindIndex(x => x.Name.Equals(name));
+        }
+        public override TreeComponent GetLastChild()
+        {
+            return components.Last();
+        }
         public List<TreeComponent> components = new List<TreeComponent>();
 
         public TreeComposite(String name, COMPONENT_TYPE componentType) : base(name, componentType) { }

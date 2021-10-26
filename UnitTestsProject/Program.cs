@@ -2,26 +2,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AssemblyBrowserProject;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UnitTestsProject
+namespace fas
 {
-    namespace fas {
-        namespace asd
+    namespace asd
+    {
+        namespace zzz
         {
-            namespace zzz
-            {
-                class Foo { }
-            }
+            class Foo { }
         }
     }
+}
+
+namespace UnitTestsProject
+{
 
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(Assembly.GetExecutingAssembly().GetTypes()[1].Namespace);
+            AssemblyTreeBuilder asm = new AssemblyTreeBuilder("D:\\БГУИР\\Третий курс\\newRepos\\AssemblyBrowserProject\\AssemblyBrowserProject\\bin\\Debug\\AssemblyBrowserProject.dll");
+            asm.Build();
+            TreeComponent tree = asm.GetRoot();
+            //Console.WriteLine(Assembly.GetExecutingAssembly().GetTypes().Length);
+            IEnumerable<TypeInfo> e = new Program().GetType()
+                                           .GetTypeInfo()
+                                           .DeclaredNestedTypes;
+            foreach (TypeInfo t in e){
+                Console.WriteLine(t.Name);
+            }
+
             Console.ReadLine();
         }
     }

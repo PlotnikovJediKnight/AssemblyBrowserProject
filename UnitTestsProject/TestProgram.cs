@@ -238,6 +238,16 @@ namespace UnitTestsProject
             TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Rand")).ComponentType, checkAgainstMethod, "Random Rand should be a method!");
         }
 
+        static void TestExtensionMethod()
+        {
+            TreeComposite curr = tree.GetTreeComposite();
+            curr = curr.GetChildAt(curr.Find("Extension")).GetTreeComposite();
+            TestFramework.AssertEqual(curr.Find("StringExtension"), -1, "Static class StringExtension is not supposed to exit!");
+            TestFramework.AssertEqual(curr.Find("String"), 0, "Class String is supposed to exit!");
+
+            curr = curr.GetChildAt(curr.Find("String")).GetTreeComposite();
+            TestFramework.AssertEqual(curr.Find("CharCount"), 0, "Extension method CharCound is not found!");
+        }
 
         static void Main(string[] args)
         {
@@ -273,6 +283,9 @@ namespace UnitTestsProject
 
             testDelegate = TestMethodsCategory;
             r.RunTest(testDelegate, "MethodsCategoryTest");
+
+            testDelegate = TestExtensionMethod;
+            r.RunTest(testDelegate, "ExtensionMethodTest");
 
             Console.ReadLine();
         }

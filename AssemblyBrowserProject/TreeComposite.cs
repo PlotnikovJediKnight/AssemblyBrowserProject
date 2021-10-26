@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AssemblyBrowserProject
 {
@@ -229,11 +228,13 @@ namespace AssemblyBrowserProject
 
         public override string ToString()
         {
-            return GetAccessModifierString(AccessModifier) + " " + UsedType?.Name + " " + Name + "(" + GetParametersString() + ")";
+            return GetAccessModifierString(AccessModifier) + " " + UsedType?.Name + " " + Name + "(" + GetParametersString() + ")" +
+                (IsExtensionMethod ? " *Extension" : "");
         }
 
         public ParameterInfo[] pInfo;
         public ACCESS_MODIFIER AccessModifier { get; set; }
+        public Boolean IsExtensionMethod { get; set; } = false;
     }
 
     class PropertyTreeLeaf : TreeLeaf

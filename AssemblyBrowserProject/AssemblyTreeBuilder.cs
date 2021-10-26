@@ -2,14 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+
+namespace JoJo
+{
+    public static class StringExtension
+    {
+        public static int CharCount(this string str, char c)
+        {
+            int counter = 0;
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (str[i] == c)
+                    counter++;
+            }
+            return counter;
+        }
+    }
+}
 
 namespace AssemblyBrowserProject
 {
     #region TestSight
     namespace foo
     {
+
         namespace goo2
         {
             class p { 
@@ -149,12 +168,35 @@ namespace AssemblyBrowserProject
             return curr;
         }
 
+        private void ProcessExtensionClass(Type extClass)
+        {
+            TreeComponent parent = GetDeclaringTreeNode(GetSplittedNamespace(extClass.Namespace));
+            foreach (MethodInfo m in extClass.GetMethods(ALL_FLAG))
+            {
+                ParameterInfo[] p = m.GetParameters();
+                if (m.IsDefined(typeof(ExtensionAttribute), true))
+                {
+                    TreeComponent createdClass = TreeComponent.CreateTreeComponent(p[0].ParameterType, true);
+                    TreeComponent cmp = parent.Add(createdClass);
+
+                    TreeComponent methodComponent = TreeComponent.CreateTreeComponent(m);
+                    (methodComponent as MethodTreeLeaf).IsExtensionMethod = true;
+
+                    cmp.Add(methodComponent);
+                }
+            }
+        }
+
         private void FillTreeByTypes(Assembly asm)
         {
             foreach (var type in asm.GetTypes())
             {
                 TreeComponent created = TreeComponent.CreateTreeComponent(type, true);
-                if (created != null)
+
+                if (created == null && type.IsAbstract && type.IsSealed)
+                {
+                    ProcessExtensionClass(type);
+                } else if (created != null)
                 {
                     TreeComponent parent = GetDeclaringTreeNode(GetSplittedNamespace(type.Namespace));
                     TreeComponent newlyInserted = parent.Add(created);

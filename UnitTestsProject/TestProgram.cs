@@ -60,6 +60,34 @@ namespace UnitTestsProject
             TestFramework.AssertEqual(curr.Find("X"), 0, "X namespace should be in T2!");
         }
 
+        static void TestNestedTypes()
+        {
+            TreeComposite curr = tree.GetTreeComposite();
+            curr = curr.GetChildAt(curr.Find("ClassesStructTest")).GetTreeComposite();
+            TreeComposite oldCurr = curr;
+
+            curr = curr.GetChildAt(curr.Find("InnerNamespace")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("B") >= 0, "class B should be in InnerNamespace");
+            TestFramework.Assert(curr.Find("D") >= 0, "class D should be in InnerNamespace");
+
+            curr = oldCurr;
+            curr = curr.GetChildAt(curr.Find("A")).GetTreeComposite();
+
+            TestFramework.Assert(curr.Find("F") >= 0, "struct F should be in class A");
+            TestFramework.Assert(curr.Find("C") >= 0, "class C should be in class A");
+
+            curr = curr.GetChildAt(curr.Find("C")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("T") >= 0, "T class should be in C!");
+            curr = curr.GetChildAt(curr.Find("T")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("P") >= 0, "P class should be in T!");
+            curr = curr.GetChildAt(curr.Find("P")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("Z") >= 0, "Z class should be in P!");
+            curr = curr.GetChildAt(curr.Find("Z")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("H") >= 0, "H struct should be in Z!");
+            curr = curr.GetChildAt(curr.Find("H")).GetTreeComposite();
+            TestFramework.Assert(curr.ComponentType == COMPONENT_TYPE.STRUCT, "H supposed to be a struct!");
+        }
+
         static void Main(string[] args)
         {
             AssemblyTreeBuilder asm = 
@@ -73,6 +101,9 @@ namespace UnitTestsProject
 
             testDelegate = TestNamespacesStructure;
             r.RunTest(testDelegate, "NamespaceStructureTest");
+
+            testDelegate = TestNestedTypes;
+            r.RunTest(testDelegate, "NestedTypesTest");
 
             Console.ReadLine();
         }

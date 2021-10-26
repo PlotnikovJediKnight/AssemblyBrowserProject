@@ -20,3 +20,34 @@ namespace TestAssembly
 class A { }
 struct B { }
 #endregion
+
+#region ClassesStructTest
+namespace ClassesStructTest
+{
+    class A
+    {
+        class C
+        {
+            class T { class P { class Z { struct H { } } } }
+        }
+
+        struct F
+        {
+
+        }
+    }
+
+    namespace InnerNamespace
+    {
+        class B
+        {
+
+        }
+
+        struct D
+        {
+
+        }
+    }
+}
+#endregion

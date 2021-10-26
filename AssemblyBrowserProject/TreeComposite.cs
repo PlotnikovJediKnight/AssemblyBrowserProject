@@ -83,6 +83,41 @@ namespace AssemblyBrowserProject
             }
         }
 
+        private static ACCESS_MODIFIER GetAccessModifierFromMethod(MethodInfo m)
+        {
+            if (m.IsPublic) return ACCESS_MODIFIER.PUBLIC;
+            if (m.IsPrivate) return ACCESS_MODIFIER.PRIVATE;
+            if (m.IsFamilyOrAssembly) return ACCESS_MODIFIER.PROTECTED_INTERNAL;
+            if (m.IsFamilyAndAssembly) return ACCESS_MODIFIER.PRIVATE_PROTECTED;
+            if (m.IsFamily) return ACCESS_MODIFIER.PROTECTED;
+            return ACCESS_MODIFIER.PRIVATE;
+        }
+
+        private static ACCESS_MODIFIER GetAccessModifierFromField(FieldInfo m)
+        {
+            if (m.IsPublic) return ACCESS_MODIFIER.PUBLIC;
+            if (m.IsPrivate) return ACCESS_MODIFIER.PRIVATE;
+            if (m.IsFamilyOrAssembly) return ACCESS_MODIFIER.PROTECTED_INTERNAL;
+            if (m.IsFamilyAndAssembly) return ACCESS_MODIFIER.PRIVATE_PROTECTED;
+            if (m.IsFamily) return ACCESS_MODIFIER.PROTECTED;
+            return ACCESS_MODIFIER.PRIVATE;
+        }
+
+        public static TreeComponent CreateTreeComponent(FieldInfo info)
+        {
+            Type usedType = info.FieldType;
+            ACCESS_MODIFIER fieldAccessModifier = GetAccessModifierFromField(info);
+            return new FieldTreeLeaf(info.Name, COMPONENT_TYPE.FIELD, fieldAccessModifier, usedType);
+        }
+
+        public static TreeComponent CreateTreeComponent(PropertyInfo info)
+        {
+            Type usedType = info.PropertyType;
+            ACCESS_MODIFIER setAccessModifier = GetAccessModifierFromMethod(info.SetMethod);
+            ACCESS_MODIFIER getAccessModifier = GetAccessModifierFromMethod(info.GetMethod);
+            return new PropertyTreeLeaf(info.Name, COMPONENT_TYPE.PROPERTY, setAccessModifier, getAccessModifier, usedType);
+        }
+
         public static TreeComponent CreateTreeComponent(Type type, bool ignoreNested)
         {
             if (ignoreNested && type.IsNested) return null;
@@ -111,15 +146,15 @@ namespace AssemblyBrowserProject
                 {
                     if (type.IsNestedPrivate)
                     {
-                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PRIVATE);
+                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.STRUCT, ACCESS_MODIFIER.PRIVATE);
                     }
                     else if (type.IsPublic)
                     {
-                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PUBLIC);
+                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.STRUCT, ACCESS_MODIFIER.PUBLIC);
                     }
                     else
                     {
-                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PROTECTED);
+                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.STRUCT, ACCESS_MODIFIER.PROTECTED);
                     }
                 }
 
@@ -140,11 +175,11 @@ namespace AssemblyBrowserProject
                 {
                     if (type.IsPublic)
                     {
-                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PUBLIC);
+                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.STRUCT, ACCESS_MODIFIER.PUBLIC);
                     }
                     else
                     {
-                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.INTERNAL);
+                        return new StructTreeComposite(type.Name, COMPONENT_TYPE.STRUCT, ACCESS_MODIFIER.INTERNAL);
                     }
                 }
             }
@@ -205,7 +240,7 @@ namespace AssemblyBrowserProject
 
         public override string ToString()
         {
-            return UsedType.Name + Name + 
+            return UsedType.Name + " " + Name + 
                 "{" + GetAccessModifierString(GetAccessModifier)+ " get; " 
                 + GetAccessModifierString(SetAccessModifier) + " set;}";
         }

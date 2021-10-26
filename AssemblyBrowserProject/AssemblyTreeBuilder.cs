@@ -27,7 +27,8 @@ namespace AssemblyBrowserProject
         }
         namespace goo3
         {
-            class y { }
+            class yyyyDOPPELGANGER { }
+            class y { int a; double d; char c; string s; yyyyDOPPELGANGER ddd; }
         }
         namespace zoo4
         {
@@ -38,11 +39,22 @@ namespace AssemblyBrowserProject
         }
         class Bar
         {
-
+            private Int32 Bla { get; set; }
         }
         struct zoo
         {
-
+            private double dfd;
+            public Double dd
+            {
+                private get
+                {
+                    return dfd;
+                }
+                set
+                {
+                    dfd = 3.144;
+                }
+            }
         }
         namespace goo
         {
@@ -144,16 +156,34 @@ namespace AssemblyBrowserProject
                     TreeComponent newlyInserted = parent.Add(created);
 
                     AddTypeConstructors(type.GetConstructors(ALL_FLAG), newlyInserted);
+                    AddTypeProperties(type.GetProperties(ALL_FLAG), newlyInserted);
+                    AddTypeFields(type.GetFields(ALL_FLAG), newlyInserted);
+                    //AddTypeMethods();
                     AddTypeNodes(type, newlyInserted);
                 }
             }
         }
 
+        private void AddTypeFields(FieldInfo[] info, TreeComponent cmp)
+        {
+            foreach (FieldInfo f in info){
+                cmp.Add(TreeComponent.CreateTreeComponent(f));
+            }
+        }
+
         private void AddTypeConstructors(ConstructorInfo[] info, TreeComponent cmp)
         {
-            foreach (var c in info)
+            foreach (ConstructorInfo c in info)
             {
                 cmp.Add(TreeComponent.CreateTreeComponent(c));
+            }
+        }
+
+        private void AddTypeProperties(PropertyInfo[] info, TreeComponent cmp)
+        {
+            foreach (PropertyInfo p in info)
+            {
+                cmp.Add(TreeComponent.CreateTreeComponent(p));
             }
         }
 
@@ -166,8 +196,8 @@ namespace AssemblyBrowserProject
                 cmp = node.Add(TreeComponent.CreateTreeComponent(nestedType, false));
 
                 AddTypeConstructors(nestedType.GetConstructors(ALL_FLAG), cmp);
-                //AddTypeProperties();
-                //AddTypeFields();
+                AddTypeProperties(nestedType.GetProperties(ALL_FLAG), cmp);
+                AddTypeFields(nestedType.GetFields(ALL_FLAG), cmp);
                 //AddTypeMethods();
 
                 AddTypeNodes(nestedType, cmp);

@@ -97,3 +97,26 @@ struct R
     private Random Rand { get; set; }
 }
 #endregion
+
+#region MethodsTest
+class S
+{
+    private Double[] MyArray() { double[] arr = new double[1]; return arr; }
+    public P StrP(int a, int b, string c) { return new P(); }
+    protected float F(DateTime dt) { return 3.14f; }
+    private protected long Zzz(short sh) { return 20000L; }
+    protected internal string Sss() { return "suprise!"; }
+}
+
+struct T
+{
+    private int A() { return -1; }
+    double D() { return 3.344; }
+    public float F() { return 12.0f; }
+    string Str() { return "C#"; }
+    char C() { return 'd'; }
+    public M Field() { return new M(); }
+    DateTime Dt() { return new DateTime(); }
+    private Random Rand() { return new Random(); }
+}
+#endregion

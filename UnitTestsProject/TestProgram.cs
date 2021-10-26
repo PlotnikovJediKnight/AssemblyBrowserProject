@@ -188,6 +188,57 @@ namespace UnitTestsProject
             TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Rand")).ComponentType, checkAgainstProperty, "Random Rand should be a property!");
         }
 
+        static void TestMethodsTypes()
+        {
+            TreeComposite curr = tree.GetTreeComposite();
+            TreeComposite oldCurr = curr;
+
+            curr = curr.GetChildAt(curr.Find("S")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("MyArray") >= 0, "Method myArray should be in S!");
+            TestFramework.Assert(curr.Find("StrP") >= 0, "Method StrP should be in S!");
+            TestFramework.Assert(curr.Find("F") >= 0, "Method F should be in S!");
+            TestFramework.Assert(curr.Find("Zzz") >= 0, "Method Zzz should be in S!");
+            TestFramework.Assert(curr.Find("Sss") >= 0, "Method Sss should be in S!");
+
+            curr = oldCurr;
+            curr = curr.GetChildAt(curr.Find("T")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("A") >= 0, "Method A should be in T!");
+            TestFramework.Assert(curr.Find("D") >= 0, "Method D should be in T!");
+            TestFramework.Assert(curr.Find("F") >= 0, "Method F should be in T!");
+            TestFramework.Assert(curr.Find("Str") >= 0, "Method Str should be in T!");
+            TestFramework.Assert(curr.Find("C") >= 0, "Method C should be in T!");
+            TestFramework.Assert(curr.Find("Field") >= 0, "Method Field should be in T!");
+            TestFramework.Assert(curr.Find("Dt") >= 0, "Method Dt should be in T!");
+            TestFramework.Assert(curr.Find("Rand") >= 0, "Method Rand should be in T!");
+        }
+
+        static void TestMethodsCategory()
+        {
+            TreeComposite curr = tree.GetTreeComposite();
+            TreeComposite oldCurr = curr;
+
+            COMPONENT_TYPE checkAgainstMethod = COMPONENT_TYPE.METHOD;
+
+            curr = curr.GetChildAt(curr.Find("S")).GetTreeComposite();
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("MyArray")).ComponentType, checkAgainstMethod, "Double[] myArray should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("StrP")).ComponentType, checkAgainstMethod, "P StrP should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("F")).ComponentType, checkAgainstMethod, "float F should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Zzz")).ComponentType, checkAgainstMethod, "long Zzz should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Sss")).ComponentType, checkAgainstMethod, "string Sss should be a method!");
+
+            curr = oldCurr;
+            curr = curr.GetChildAt(curr.Find("T")).GetTreeComposite();
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("A")).ComponentType, checkAgainstMethod, "int A should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("D")).ComponentType, checkAgainstMethod, "double D should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("F")).ComponentType, checkAgainstMethod, "float F should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Str")).ComponentType, checkAgainstMethod, "string Str should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("C")).ComponentType, checkAgainstMethod, "char C should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Field")).ComponentType, checkAgainstMethod, "M Field should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Dt")).ComponentType, checkAgainstMethod, "DateTime Dt should be a method!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Rand")).ComponentType, checkAgainstMethod, "Random Rand should be a method!");
+        }
+
+
         static void Main(string[] args)
         {
             AssemblyTreeBuilder asm = 
@@ -216,6 +267,12 @@ namespace UnitTestsProject
 
             testDelegate = TestPropertiesCategory;
             r.RunTest(testDelegate, "PropertiesCategoryTest");
+
+            testDelegate = TestMethodsTypes;
+            r.RunTest(testDelegate, "MethodsTypesTest");
+
+            testDelegate = TestMethodsCategory;
+            r.RunTest(testDelegate, "MethodsCategoryTest");
 
             Console.ReadLine();
         }

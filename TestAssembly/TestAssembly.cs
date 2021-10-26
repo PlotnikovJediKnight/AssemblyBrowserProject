@@ -51,3 +51,26 @@ namespace ClassesStructTest
     }
 }
 #endregion
+
+#region FieldsTest
+class M
+{
+    private double[] myArray;
+    public P strP;
+    protected float f;
+    private protected long zzz;
+    protected internal string sss;
+}
+
+struct P
+{
+    private int a;
+    double d;
+    public float f;
+    string str;
+    char c;
+    public M field;
+    DateTime dt;
+    private Random rand;
+}
+#endregion

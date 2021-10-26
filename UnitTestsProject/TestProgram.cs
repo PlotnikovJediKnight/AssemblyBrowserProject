@@ -85,7 +85,57 @@ namespace UnitTestsProject
             curr = curr.GetChildAt(curr.Find("Z")).GetTreeComposite();
             TestFramework.Assert(curr.Find("H") >= 0, "H struct should be in Z!");
             curr = curr.GetChildAt(curr.Find("H")).GetTreeComposite();
-            TestFramework.Assert(curr.ComponentType == COMPONENT_TYPE.STRUCT, "H supposed to be a struct!");
+            TestFramework.Assert(curr.ComponentType == COMPONENT_TYPE.STRUCT, "H is supposed to be a struct!");
+        }
+
+        static void TestFieldsTypes()
+        {
+            TreeComposite curr = tree.GetTreeComposite();
+            TreeComposite oldCurr = curr;
+
+            curr = curr.GetChildAt(curr.Find("M")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("myArray") >= 0, "double[] myArray should be in M!");
+            TestFramework.Assert(curr.Find("strP") >= 0, "P strP should be in M!");
+            TestFramework.Assert(curr.Find("f") >= 0, "float f should be in M!");
+            TestFramework.Assert(curr.Find("zzz") >= 0, "long zzz should be in M!");
+            TestFramework.Assert(curr.Find("sss") >= 0, "string sss should be in M!");
+
+            curr = oldCurr;
+            curr = curr.GetChildAt(curr.Find("P")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("a") >= 0, "int a should be in P!");
+            TestFramework.Assert(curr.Find("d") >= 0, "double d should be in P!");
+            TestFramework.Assert(curr.Find("f") >= 0, "float f should be in P!");
+            TestFramework.Assert(curr.Find("str") >= 0, "string str should be in P!");
+            TestFramework.Assert(curr.Find("c") >= 0, "char c should be in P!");
+            TestFramework.Assert(curr.Find("field") >= 0, "M field should be in P!");
+            TestFramework.Assert(curr.Find("dt") >= 0, "DateTime dt should be in P!");
+            TestFramework.Assert(curr.Find("rand") >= 0, "Random rand should be in P!");
+        }
+
+        static void TestFieldsCategory()
+        {
+            TreeComposite curr = tree.GetTreeComposite();
+            TreeComposite oldCurr = curr;
+
+            COMPONENT_TYPE checkAgainstField = COMPONENT_TYPE.FIELD;
+
+            curr = curr.GetChildAt(curr.Find("M")).GetTreeComposite();
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("myArray")).ComponentType, checkAgainstField, "double[] myArray should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("strP")).ComponentType, checkAgainstField, "P strP should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("f")).ComponentType, checkAgainstField, "float f should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("zzz")).ComponentType, checkAgainstField, "long zzz should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("sss")).ComponentType, checkAgainstField, "string sss should be a field!");
+
+            curr = oldCurr;
+            curr = curr.GetChildAt(curr.Find("P")).GetTreeComposite();
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("a")).ComponentType, checkAgainstField, "int a should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("d")).ComponentType, checkAgainstField, "double d should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("f")).ComponentType, checkAgainstField, "float f should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("str")).ComponentType, checkAgainstField, "string str should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("c")).ComponentType, checkAgainstField, "char c should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("field")).ComponentType, checkAgainstField, "M field should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("dt")).ComponentType, checkAgainstField, "DateTime dt should be a field!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("rand")).ComponentType, checkAgainstField, "Random rand should be a field!");
         }
 
         static void Main(string[] args)
@@ -104,6 +154,12 @@ namespace UnitTestsProject
 
             testDelegate = TestNestedTypes;
             r.RunTest(testDelegate, "NestedTypesTest");
+
+            testDelegate = TestFieldsTypes;
+            r.RunTest(testDelegate, "FieldTypesTest");
+
+            testDelegate = TestFieldsCategory;
+            r.RunTest(testDelegate, "FieldsCategoryTest");
 
             Console.ReadLine();
         }

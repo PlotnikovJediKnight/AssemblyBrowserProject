@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,6 +55,33 @@ namespace AssemblyBrowserProject
         public virtual TreeComponent GetChildAt(int index) { throw new NotImplementedException(); }
         public virtual int Find(String name) { throw new NotImplementedException(); }
         public virtual TreeComponent GetLastChild() { throw new NotImplementedException(); }
+
+        public static TreeComponent CreateTreeComponent(ConstructorInfo info)
+        {
+            ParameterInfo[] p = info.GetParameters();
+            if (info.IsPublic)
+            {
+                return new MethodTreeLeaf(info.Name, COMPONENT_TYPE.METHOD, ACCESS_MODIFIER.PUBLIC, null, p);
+            } else if (info.IsPrivate)
+            {
+                return new MethodTreeLeaf(info.Name, COMPONENT_TYPE.METHOD, ACCESS_MODIFIER.PRIVATE, null, p);
+            }else if (info.IsFamilyOrAssembly)
+            {
+                return new MethodTreeLeaf(info.Name, COMPONENT_TYPE.METHOD, ACCESS_MODIFIER.PROTECTED_INTERNAL, null, p);
+            }
+            else if (info.IsFamilyAndAssembly)
+            {
+                return new MethodTreeLeaf(info.Name, COMPONENT_TYPE.METHOD, ACCESS_MODIFIER.PRIVATE_PROTECTED, null, p);
+            }
+            else if (info.IsFamily)
+            {
+                return new MethodTreeLeaf(info.Name, COMPONENT_TYPE.METHOD, ACCESS_MODIFIER.PROTECTED, null, p);
+            }
+            else
+            {
+                return new MethodTreeLeaf(info.Name, COMPONENT_TYPE.METHOD, ACCESS_MODIFIER.PRIVATE, null, p);
+            }
+        }
 
         public static TreeComponent CreateTreeComponent(Type type, bool ignoreNested)
         {
@@ -139,15 +167,30 @@ namespace AssemblyBrowserProject
 
     class MethodTreeLeaf : TreeLeaf
     {
-        public MethodTreeLeaf(String name, COMPONENT_TYPE componentType, ACCESS_MODIFIER accMod, Type returnType) :
+        public MethodTreeLeaf(String name, COMPONENT_TYPE componentType, ACCESS_MODIFIER accMod, Type returnType, ParameterInfo[] pInfo) :
             base(name, componentType, returnType)
-        { AccessModifier = accMod; }
+        { AccessModifier = accMod; this.pInfo = pInfo; }
+
+        private string GetParametersString()
+        {
+            StringBuilder result = new StringBuilder("");
+            for (int i = 0; i < pInfo.Length; ++i)
+            {
+                result.Append(pInfo[i].ParameterType.Name);
+                result.Append(" ");
+                result.Append(pInfo[i].Name);
+                if (i == pInfo.Length - 1) break;
+                result.Append(", ");
+            }
+            return result.ToString();
+        }
 
         public override string ToString()
         {
-            return GetAccessModifierString(AccessModifier) + " " + UsedType.Name + Name + "(...)";
+            return GetAccessModifierString(AccessModifier) + " " + UsedType?.Name + Name + "(" + GetParametersString() + ")";
         }
 
+        public ParameterInfo[] pInfo;
         public ACCESS_MODIFIER AccessModifier { get; set; }
     }
 

@@ -12,7 +12,18 @@ namespace AssemblyBrowserProject
     {
         namespace goo2
         {
-            class p { class z { struct zs { class f { } } } }
+            class p { 
+                class z { 
+                    struct zs { 
+                        public zs(int s, double d, DateTime dt) { } 
+                        private zs(string d) { }
+                        private zs(double d, double go) { }
+                        class f { 
+                            private protected f() { } 
+                        } 
+                    } 
+                } 
+            }
         }
         namespace goo3
         {
@@ -69,6 +80,8 @@ namespace AssemblyBrowserProject
 
     public class AssemblyTreeBuilder
     {
+        BindingFlags ALL_FLAG = BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance;
+
         public AssemblyTreeBuilder(String dllPath)
         {
             this.dllPath = dllPath;
@@ -128,8 +141,19 @@ namespace AssemblyBrowserProject
                 if (created != null)
                 {
                     TreeComponent parent = GetDeclaringTreeNode(GetSplittedNamespace(type.Namespace));
-                    AddTypeNodes(type, parent.Add(created));
+                    TreeComponent newlyInserted = parent.Add(created);
+
+                    AddTypeConstructors(type.GetConstructors(ALL_FLAG), newlyInserted);
+                    AddTypeNodes(type, newlyInserted);
                 }
+            }
+        }
+
+        private void AddTypeConstructors(ConstructorInfo[] info, TreeComponent cmp)
+        {
+            foreach (var c in info)
+            {
+                cmp.Add(TreeComponent.CreateTreeComponent(c));
             }
         }
 
@@ -139,15 +163,13 @@ namespace AssemblyBrowserProject
                                            .DeclaredNestedTypes)
             {
                 TreeComponent cmp = null;
-                if (nestedType.IsValueType)
-                {
-                    cmp = node.Add(new StructTreeComposite(nestedType.Name, COMPONENT_TYPE.STRUCT, ACCESS_MODIFIER.INTERNAL));
-                }
-                else if (nestedType.IsClass)
-                {
-                    cmp = node.Add(new ClassTreeComposite(nestedType.Name, COMPONENT_TYPE.CLASS, ACCESS_MODIFIER.PUBLIC));
-                }
-                
+                cmp = node.Add(TreeComponent.CreateTreeComponent(nestedType, false));
+
+                AddTypeConstructors(nestedType.GetConstructors(ALL_FLAG), cmp);
+                //AddTypeProperties();
+                //AddTypeFields();
+                //AddTypeMethods();
+
                 AddTypeNodes(nestedType, cmp);
             }
         }

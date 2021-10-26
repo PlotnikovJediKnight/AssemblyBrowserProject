@@ -31,6 +31,7 @@ namespace UnitTestsProject
             IEnumerable<TypeInfo> e = new Program().GetType()
                                            .GetTypeInfo()
                                            .DeclaredNestedTypes;
+
             foreach (TypeInfo t in e){
                 Console.WriteLine(t.Name);
             }

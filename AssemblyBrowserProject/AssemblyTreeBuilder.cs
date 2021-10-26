@@ -19,7 +19,11 @@ namespace AssemblyBrowserProject
                         private zs(string d) { }
                         private zs(double d, double go) { }
                         class f { 
-                            private protected f() { } 
+                            private protected f() { }
+                            private protected void foo() {  }
+                            protected internal int soo() { return 2; }
+                            public double soo(int d) { return 2.0; }
+                            protected int soo(char d, string s, double f, p ASD) { return -1; }
                         } 
                     } 
                 } 
@@ -158,9 +162,17 @@ namespace AssemblyBrowserProject
                     AddTypeConstructors(type.GetConstructors(ALL_FLAG), newlyInserted);
                     AddTypeProperties(type.GetProperties(ALL_FLAG), newlyInserted);
                     AddTypeFields(type.GetFields(ALL_FLAG), newlyInserted);
-                    //AddTypeMethods();
+                    AddTypeMethods(type.GetMethods(ALL_FLAG), newlyInserted);
                     AddTypeNodes(type, newlyInserted);
                 }
+            }
+        }
+
+        private void AddTypeMethods(MethodInfo[] info, TreeComponent cmp)
+        {
+            foreach (MethodInfo m in info)
+            {
+                cmp.Add(TreeComponent.CreateTreeComponent(m));
             }
         }
 
@@ -198,7 +210,7 @@ namespace AssemblyBrowserProject
                 AddTypeConstructors(nestedType.GetConstructors(ALL_FLAG), cmp);
                 AddTypeProperties(nestedType.GetProperties(ALL_FLAG), cmp);
                 AddTypeFields(nestedType.GetFields(ALL_FLAG), cmp);
-                //AddTypeMethods();
+                AddTypeMethods(nestedType.GetMethods(ALL_FLAG), cmp);
 
                 AddTypeNodes(nestedType, cmp);
             }

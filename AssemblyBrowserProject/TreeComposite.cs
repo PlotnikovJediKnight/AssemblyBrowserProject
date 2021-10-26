@@ -103,6 +103,13 @@ namespace AssemblyBrowserProject
             return ACCESS_MODIFIER.PRIVATE;
         }
 
+        public static TreeComponent CreateTreeComponent(MethodInfo info)
+        {
+            Type returnType = info.ReturnType;
+            ACCESS_MODIFIER methodAccessModifier = GetAccessModifierFromMethod(info);
+            return new MethodTreeLeaf(info.Name, COMPONENT_TYPE.METHOD, methodAccessModifier, returnType, info.GetParameters());
+        }
+
         public static TreeComponent CreateTreeComponent(FieldInfo info)
         {
             Type usedType = info.FieldType;
@@ -222,7 +229,7 @@ namespace AssemblyBrowserProject
 
         public override string ToString()
         {
-            return GetAccessModifierString(AccessModifier) + " " + UsedType?.Name + Name + "(" + GetParametersString() + ")";
+            return GetAccessModifierString(AccessModifier) + " " + UsedType?.Name + " " + Name + "(" + GetParametersString() + ")";
         }
 
         public ParameterInfo[] pInfo;

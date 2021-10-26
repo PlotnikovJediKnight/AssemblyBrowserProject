@@ -138,6 +138,56 @@ namespace UnitTestsProject
             TestFramework.AssertEqual(curr.GetChildAt(curr.Find("rand")).ComponentType, checkAgainstField, "Random rand should be a field!");
         }
 
+        static void TestPropertiesTypes()
+        {
+            TreeComposite curr = tree.GetTreeComposite();
+            TreeComposite oldCurr = curr;
+
+            curr = curr.GetChildAt(curr.Find("Q")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("MyArray") >= 0, "Double[] myArray should be in Q!");
+            TestFramework.Assert(curr.Find("StrP") >= 0, "P StrP should be in Q!");
+            TestFramework.Assert(curr.Find("F") >= 0, "float F should be in Q!");
+            TestFramework.Assert(curr.Find("Zzz") >= 0, "long Zzz should be in Q!");
+            TestFramework.Assert(curr.Find("Sss") >= 0, "string Sss should be in Q!");
+
+            curr = oldCurr;
+            curr = curr.GetChildAt(curr.Find("R")).GetTreeComposite();
+            TestFramework.Assert(curr.Find("A") >= 0, "int A should be in R!");
+            TestFramework.Assert(curr.Find("D") >= 0, "double D should be in R!");
+            TestFramework.Assert(curr.Find("F") >= 0, "float F should be in R!");
+            TestFramework.Assert(curr.Find("Str") >= 0, "string Str should be in R!");
+            TestFramework.Assert(curr.Find("C") >= 0, "char C should be in R!");
+            TestFramework.Assert(curr.Find("Field") >= 0, "M Field should be in R!");
+            TestFramework.Assert(curr.Find("Dt") >= 0, "DateTime Dt should be in R!");
+            TestFramework.Assert(curr.Find("Rand") >= 0, "Random Rand should be in R!");
+        }
+
+        static void TestPropertiesCategory()
+        {
+            TreeComposite curr = tree.GetTreeComposite();
+            TreeComposite oldCurr = curr;
+
+            COMPONENT_TYPE checkAgainstProperty = COMPONENT_TYPE.PROPERTY;
+
+            curr = curr.GetChildAt(curr.Find("Q")).GetTreeComposite();
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("MyArray")).ComponentType, checkAgainstProperty, "Double[] myArray should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("StrP")).ComponentType, checkAgainstProperty, "P StrP should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("F")).ComponentType, checkAgainstProperty, "float F should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Zzz")).ComponentType, checkAgainstProperty, "long Zzz should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Sss")).ComponentType, checkAgainstProperty, "string Sss should be a property!");
+
+            curr = oldCurr;
+            curr = curr.GetChildAt(curr.Find("R")).GetTreeComposite();
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("A")).ComponentType, checkAgainstProperty, "int A should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("D")).ComponentType, checkAgainstProperty, "double D should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("F")).ComponentType, checkAgainstProperty, "float F should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Str")).ComponentType, checkAgainstProperty, "string Str should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("C")).ComponentType, checkAgainstProperty, "char C should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Field")).ComponentType, checkAgainstProperty, "M Field should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Dt")).ComponentType, checkAgainstProperty, "DateTime Dt should be a property!");
+            TestFramework.AssertEqual(curr.GetChildAt(curr.Find("Rand")).ComponentType, checkAgainstProperty, "Random Rand should be a property!");
+        }
+
         static void Main(string[] args)
         {
             AssemblyTreeBuilder asm = 
@@ -160,6 +210,12 @@ namespace UnitTestsProject
 
             testDelegate = TestFieldsCategory;
             r.RunTest(testDelegate, "FieldsCategoryTest");
+
+            testDelegate = TestPropertiesTypes;
+            r.RunTest(testDelegate, "PropertiesTypesTest");
+
+            testDelegate = TestPropertiesCategory;
+            r.RunTest(testDelegate, "PropertiesCategoryTest");
 
             Console.ReadLine();
         }

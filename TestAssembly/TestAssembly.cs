@@ -74,3 +74,26 @@ struct P
     private Random rand;
 }
 #endregion
+
+#region PropertiesTest
+class Q
+{
+    private Double[] MyArray { get; set; }
+    public P StrP { get; private set; }
+    protected float F { get; set; }
+    private protected long Zzz { get; set; }
+    protected internal string Sss { private get; set; }
+}
+
+struct R
+{
+    private int A { get; set; }
+    double D { get; set; }
+    public float F { get; set; }
+    string Str { get; set; }
+    char C { get; set; }
+    public M Field { private get; set; }
+    DateTime Dt { get; set; }
+    private Random Rand { get; set; }
+}
+#endregion

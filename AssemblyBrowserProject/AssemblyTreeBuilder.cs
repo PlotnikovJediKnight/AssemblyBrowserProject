@@ -1,117 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace JoJo
-{
-    public static class StringExtension
-    {
-        public static int CharCount(this string str, char c)
-        {
-            int counter = 0;
-            for (int i = 0; i < str.Length; i++)
-            {
-                if (str[i] == c)
-                    counter++;
-            }
-            return counter;
-        }
-    }
-}
+
 
 namespace AssemblyBrowserProject
 {
-    #region TestSight
-    namespace foo
-    {
-
-        namespace goo2
-        {
-            class p { 
-                class z { 
-                    struct zs { 
-                        public zs(int s, double d, DateTime dt) { } 
-                        private zs(string d) { }
-                        private zs(double d, double go) { }
-                        class f { 
-                            private protected f() { }
-                            private protected void foo() {  }
-                            protected internal int soo() { return 2; }
-                            public double soo(int d) { return 2.0; }
-                            protected int soo(char d, string s, double f, p ASD) { return -1; }
-                        } 
-                    } 
-                } 
-            }
-        }
-        namespace goo3
-        {
-            class yyyyDOPPELGANGER { }
-            class y { int a; double d; char c; string s; yyyyDOPPELGANGER ddd; }
-        }
-        namespace zoo4
-        {
-            interface sld
-            {
-
-            }
-        }
-        class Bar
-        {
-            private Int32 Bla { get; set; }
-        }
-        struct zoo
-        {
-            private double dfd;
-            public Double dd
-            {
-                private get
-                {
-                    return dfd;
-                }
-                set
-                {
-                    dfd = 3.144;
-                }
-            }
-        }
-        namespace goo
-        {
-            class yty
-            {
-
-            }
-            namespace ytyty
-            {
-                interface casd { }
-                namespace zzzzzz
-                {
-                    class flflf { };
-                }
-            }
-        }
-    }
-
-    namespace A
-    {
-        class A
-        {
-
-        }
-    }
-
-    namespace B
-    {
-        class A
-        {
-
-        }
-    }
-    #endregion
 
     public class AssemblyTreeBuilder
     {
@@ -132,11 +26,12 @@ namespace AssemblyBrowserProject
 
         private String[] GetSplittedNamespace(String namespaceStr)
         {
-            return namespaceStr.Split('.');
+            return namespaceStr?.Split('.');
         }
 
         private void AddNamespaceNodes(String[] domains, int curr, TreeComponent comp)
         {
+            if (domains == null) return;
             if (curr == domains.Length) return;
             int index = comp.Find(domains[curr]);
             if (index == -1)
@@ -161,6 +56,7 @@ namespace AssemblyBrowserProject
 
         private TreeComponent GetDeclaringTreeNode(String[] domains)
         {
+            if (domains == null) return root;
             TreeComponent curr = root;
             foreach (string s in domains){
                 curr = curr.GetChildAt(curr.Find(s));

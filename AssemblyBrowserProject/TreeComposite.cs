@@ -262,6 +262,12 @@ namespace AssemblyBrowserProject
         public FieldTreeLeaf(String name, COMPONENT_TYPE componentType, ACCESS_MODIFIER accMod, Type fieldType) :
             base(name, componentType, fieldType)
         { AccessModifier = accMod; }
+
+        public override string ToString()
+        {
+            return GetAccessModifierString(AccessModifier) + " " + UsedType.Name + " " + Name;
+        }
+
         public ACCESS_MODIFIER AccessModifier { get; set; }
     }
 
@@ -278,6 +284,8 @@ namespace AssemblyBrowserProject
         {
             return components.Last();
         }
+        public override TreeComposite GetTreeComposite() { return this; }
+
         public List<TreeComponent> components = new List<TreeComponent>();
 
         public TreeComposite(String name, COMPONENT_TYPE componentType) : base(name, componentType) { }

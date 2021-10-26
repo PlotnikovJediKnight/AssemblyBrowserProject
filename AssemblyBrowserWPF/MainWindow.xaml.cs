@@ -17,6 +17,7 @@ namespace AssemblyBrowserWPF
 
 		public void GetTreeFilled(TreeComponent tree)
         {
+			trvStructure.Items.Clear();
 			trvStructure.Items.Add(CreateTreeItem(tree.GetTreeComposite()));
         }
 
